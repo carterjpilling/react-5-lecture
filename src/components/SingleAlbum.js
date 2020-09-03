@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
 import albums from '../data.json'
 import './style.css'
 
@@ -11,19 +12,44 @@ class SingleAlbum extends Component {
   }
 
   componentDidMount() {
-    //Find album using match object
-  }
+    console.log(this.props.match)
+    const { albumId } = this.props.match.params
 
+    const album = albums.find((element) => element.id === +albumId)
+
+    if (!album) {
+      this.props.history.push('/404')
+    } else {
+      this.setState({
+        album: album,
+      })
+    }
+  }
+  //prevprops, the previous value of props. Used to see if we need to refresh the page (aka if something has changed)
+  //this just makes it so we can change the url. 
   componentDidUpdate(prevProps) {
-    //Check for change in match object and use it to find album
-  }
+    const { albumId } = this.props.match.params
+    //only perform if the albumId changes
+    if (albumId !== prevProps.match.params.albumId) {
+      const album = albums.find((element) => element.id === +albumId)
 
+      if (!album) {
+        this.props.history.push('/404')
+      } else {
+        this.setState({
+          album: album,
+        })
+
+      }
+    }
+  }
   handleBuyAlbum = () => {
     alert('YOU BOUGHT IT')
-    //Return to home page
+    this.props.history.push('/')
   }
 
   render() {
+    console.log(this.props)
     return (
       <div className="single-album">
         <h2>
@@ -41,4 +67,4 @@ class SingleAlbum extends Component {
     )
   }
 }
-export default SingleAlbum
+export default withRouter(SingleAlbum)
